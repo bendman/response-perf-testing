@@ -1,3 +1,4 @@
+import NodeStream from "stream";
 import nav from "./_template/nav.js";
 
 const early = `
@@ -23,15 +24,28 @@ const late = `
 
 /** @type {import("express").RequestHandler **/
 const streamRoute = (req, res) => {
-  res.status(200);
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.setHeader("Transfer-Encoding", "chunked");
+  // Required for Firefox to start parsing head
+  res.setHeader("Content-Type", "text/html");
 
-  res.write(early);
+  // Following headers are automatically set
+  // res.status(200);
+  // res.setHeader("Transfer-Encoding", "chunked");
 
+  // Prepare response for streaming
+  const resStream = new NodeStream.PassThrough();
+  resStream.setEncoding("utf8");
+  resStream.on("end", () => res.end(""));
+  resStream.pipe(res, { end: false });
+
+  // Send first head chunk with resource hint
+  resStream.push(early);
+
+  // Wait to send the last chunk
   setTimeout(() => {
-    res.write(late);
-    res.end();
+    resStream.push(late);
+
+    // end the stream
+    resStream.push(null);
   }, 3000);
 };
 
