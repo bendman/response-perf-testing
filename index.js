@@ -6,7 +6,6 @@ import home from "./pages/home.js";
 import streamRoute from "./pages/stream.js";
 import earlyHintsRoute from "./pages/early-hints.js";
 import { readFileSync } from "fs";
-import { readFile } from "fs/promises";
 import path from "path";
 
 const app = http2Express(express);
@@ -14,12 +13,20 @@ const PORT = 3000;
 const sleep = (ms = 3000) =>
   new Promise((resolve) => setTimeout(resolve, 3000));
 
+const log = (...args) =>
+  console.log(`[${new Date().toLocaleTimeString()}]`, ...args);
+
 const serverOptions = {
   key: readFileSync("./ssl/key.pem"),
   cert: readFileSync("./ssl/cert.pem"),
   allowHTTP1: true,
 };
 
+// Logger
+app.use("*", (req, res, next) => {
+  log(`received request for ${req.originalUrl}`);
+  next();
+});
 app.get("/", home);
 app.get("/stream", streamRoute);
 app.get("/early-hints", earlyHintsRoute);
@@ -27,16 +34,15 @@ app.get("/early-hints", earlyHintsRoute);
 // app.get("/raw-async-await", rawAsyncAwaitRoute);
 // app.get("/wrapped-async-await", wrappedAsyncAwaitRoute);
 
-app.get("/public/script.js", (req, res) => {
-  sleep().then(() => res.sendFile(path.resolve("./public/script.js")));
-});
-app.get("/public/style.css", (req, res) => {
-  sleep().then(() => res.sendFile(path.resolve("./public/style.css")));
-});
-app.get("/public/img.png", (req, res) => {
-  sleep().then(() => res.sendFile(path.resolve("./public/img.png")));
-});
+// Slow down some requests for perf testing slow files
+const slowStatic = (req, res) => {
+  sleep().then(() => res.sendFile(path.resolve(`.${req.path}`)));
+};
+app.get("/public/script.js", slowStatic);
+app.get("/public/style.css", slowStatic);
+app.get("/public/img.png", slowStatic);
 
+// Normal server for non-slow static files
 app.use("/public", express.static("public"));
 
 const server = http2.createSecureServer(serverOptions, app);

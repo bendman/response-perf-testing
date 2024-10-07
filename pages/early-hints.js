@@ -7,9 +7,9 @@ const page = `
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Page Loading Tests</title>
-    <script defer rel="preload" src="https://slowfil.es/file?type=js&delay=3000&payload=dom"></script>
-    <script defer rel="preload" src="/public/script.js"></script>
-    <link rel="stylesheet" rel="preload" href="/public/style.css" />
+    <script defer src="https://slowfil.es/file?type=js&delay=3000&payload=dom"></script>
+    <script defer src="/public/script.js"></script>
+    <link rel="stylesheet" href="/public/style.css" />
   </head>
   <body>
     <h1>Routes</h1>
@@ -25,8 +25,8 @@ const earlyHintsRoute = (req, res) => {
   const earlyHints = [
     //"<https://slowfil.es/file?type=js&delay=3000&payload=dom>;rel=preload;as=script",
     "</public/script.js>; rel=preload; as=script",
-    //"</public/style.css>; rel=preload; as=styles",
-    //"</public/img.png>;rel=preload;as=image",
+    "</public/style.css>; rel=preload; as=style",
+    "</public/img.png>;rel=preload;as=image",
   ];
   res.writeEarlyHints({ link: earlyHints });
 
