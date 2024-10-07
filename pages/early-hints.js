@@ -21,16 +21,18 @@ const page = `
 
 /** @type {import("express").RequestHandler} **/
 const earlyHintsRoute = (req, res) => {
-  res.writeEarlyHints({
-    link: [
-      "<https://slowfil.es/file?type=js&delay=3000&payload=dom>;rel=preload;as=script",
-      "</public/script.js>;rel=preload;as=script",
-      "</public/style.css>;rel=preload;as=styles",
-      "</public/img.png>;rel=preload;as=image",
-    ],
-  });
+  // Send early hints to the client
+  const earlyHints = [
+    //"<https://slowfil.es/file?type=js&delay=3000&payload=dom>;rel=preload;as=script",
+    "</public/script.js>; rel=preload; as=script",
+    //"</public/style.css>; rel=preload; as=styles",
+    //"</public/img.png>;rel=preload;as=image",
+  ];
+  res.writeEarlyHints({ link: earlyHints });
+
+  // Wait to send the rest of the page
   setTimeout(() => {
-    res.status(200).send(page);
+    res.send(page);
   }, 3000);
 };
 
