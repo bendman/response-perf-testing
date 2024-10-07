@@ -20,7 +20,7 @@ const start = `
 `.trim();
 const end = ``.trim();
 
-/** @type {import("express").RequestHandler **/
+/** @type {import("express").RequestHandler} **/
 const homeRoute = (req, res, next) => {
   res.status(200).send(page);
   next();

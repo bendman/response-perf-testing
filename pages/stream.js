@@ -7,8 +7,10 @@ const early = `
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <script defer src="https://slowfil.es/file?type=js&delay=2500&payload=dom"></script>
-    <link rel="preload" href="https://slowfil.es/file?type=png&delay=2500" as="image" />
+    <script defer src="https://slowfil.es/file?type=js&delay=3000&payload=dom"></script>
+    <script defer src="/public/script.js"></script>
+    <link rel="preload" href="/public/img.png" as="image" />
+    <link rel="stylesheet" href="/public/style.css" />
 `.trim();
 
 const late = `
@@ -22,7 +24,7 @@ const late = `
 </html>
 `.trim();
 
-/** @type {import("express").RequestHandler **/
+/** @type {import("express").RequestHandler} **/
 const streamRoute = (req, res) => {
   // Required for Firefox to start parsing head
   res.setHeader("Content-Type", "text/html");
