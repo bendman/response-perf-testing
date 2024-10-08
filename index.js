@@ -36,6 +36,10 @@ app.get("/early-hints", earlyHintsRoute);
 
 // Slow down some requests for perf testing slow files
 const slowStatic = (req, res) => {
+  // Early hints use browser cache internally, so make assets cacheable
+  res.set({
+    "Cache-Control": "max-age=30",
+  });
   sleep().then(() => res.sendFile(path.resolve(`.${req.path}`)));
 };
 app.get("/public/script.js", slowStatic);

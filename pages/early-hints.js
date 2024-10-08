@@ -7,7 +7,7 @@ const page = `
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Page Loading Tests</title>
-    <script defer src="https://slowfil.es/file?type=js&delay=3000&payload=dom"></script>
+    <script defer src="https://slowfil.es/file?type=js&delay=3000&payload=dom&max-age=60"></script>
     <script defer src="/public/script.js"></script>
     <link rel="stylesheet" href="/public/style.css" />
   </head>
@@ -22,10 +22,13 @@ const page = `
 /** @type {import("express").RequestHandler} **/
 const earlyHintsRoute = (req, res) => {
   // Send early hints to the client
+  res.set({
+    "Cache-Control": "max-age=30",
+  });
   const earlyHints = [
-    //"<https://slowfil.es/file?type=js&delay=3000&payload=dom>;rel=preload;as=script",
-    "</public/script.js>; rel=preload; as=script",
-    "</public/style.css>; rel=preload; as=style",
+    "<https://slowfil.es/file?type=js&delay=3000&payload=dom&max-age=60>;rel=preload;as=script",
+    "</public/script.js>;rel=preload;as=script",
+    "</public/style.css>;rel=preload;as=style",
     "</public/img.png>;rel=preload;as=image",
   ];
   res.writeEarlyHints({ link: earlyHints });
